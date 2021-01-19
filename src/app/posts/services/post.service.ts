@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, of, throwError } from "rxjs";
-import { catchError, tap } from "rxjs/operators";
+import { catchError, finalize, tap } from "rxjs/operators";
 
 import { Post } from "../models/post.model";
 
@@ -11,7 +11,7 @@ export class PostService {
 
   getPosts(): Observable<Post[]> {
     return this.http
-      .get<Post[]>("https://jsonplaceholder.typicode.com/todoss")
+      .get<Post[]>("https://jsonplaceholder.typicode.com/todos")
       .pipe(
         //Order is important
         // if I swap the first catch error fucntion with the second one
@@ -24,6 +24,10 @@ export class PostService {
         catchError(error => {
           console.log("Error caught in catchError2", error);
           return of([]);
+        }),
+        finalize(() => {
+          console.log(`Finally!! This function will always be called. 
+          Irrespective of whether the obseervable completes or erors out!`);
         })
       );
   }
